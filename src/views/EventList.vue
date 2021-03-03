@@ -6,8 +6,9 @@
 </template>
 
 <script lang="ts">
+// eslint-disable-next-line no-unused-vars
+import { EventItem, EventItemModel } from './../types'
 import { defineComponent } from 'vue'
-import { EventItem } from '../types'
 
 import EventCard from '../components/EventCard.vue'
 import EventService from '../services/EventService'
@@ -19,17 +20,28 @@ export default defineComponent({
   },
   data() {
     return {
-      events: [] as EventItem[]
+      events: [] as EventItemModel[]
     }
   },
   created() {
     EventService.getEvents()
       .then(response => {
-        this.events = response.data
+        const data = response.data as EventItem[]
+        this.events = data.map((item: EventItem) => new EventItemModel(item))
       })
       .catch(error => {
         console.log(error)
       })
+  },
+  computed: {
+    firstEvent(): EventItemModel {
+      return this.events[0]
+    }
+  },
+  methods: {
+    addEvent(newEvent: EventItemModel) {
+      this.events.push(newEvent)
+    }
   }
 })
 </script>
